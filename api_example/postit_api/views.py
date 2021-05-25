@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from rest_framework import generics, permissions
 from .models import Post, PostLike, Comment, CommentLike
-from .serializers import PostSerializer, CommentSerializer
+from .serializers import PostSerializer, CommentSerializer, UserSerializer
 from rest_framework.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 class PostList(generics.ListCreateAPIView):
     queryset = Post.objects.all()
@@ -63,3 +64,9 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
             return self.update(request, *args, **kwargs)
         else:
             raise ValidationError('Negalima koreguoti svetimų komentarų!')
+
+
+class UserCreate(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (permissions.AllowAny, )
