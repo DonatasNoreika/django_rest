@@ -1,5 +1,7 @@
 from django.shortcuts import render
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+
 from .models import Post, PostLike, Comment, CommentLike
 from .serializers import PostSerializer, CommentSerializer, UserSerializer
 from rest_framework.exceptions import ValidationError
@@ -70,3 +72,11 @@ class UserCreate(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.AllowAny, )
+
+    def delete(self, request, *args, **kwargs):
+        user = User.objects.filter(pk=self.request.user.pk)
+        if user.exists():
+            user.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            raise ValidationError('User doesn\'t exist.')
